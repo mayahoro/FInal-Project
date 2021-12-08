@@ -61,6 +61,7 @@ def getDictOfYears(data, cur, conn):
             year_frequency[i] = 1
         else:
             year_frequency[i] += 1
+
     year_frequency_sorted = sorted(year_frequency.items(), key=lambda x: x[1], reverse=True)
 
     print(year_frequency_sorted[:14])
@@ -68,17 +69,15 @@ def getDictOfYears(data, cur, conn):
     return year_frequency_sorted[:14]
     #print(lst_of_years)
 
-#def barchart_year_and_frequency(dictionary):
-    #for i in dictionary:
-     #   years = i[0]
-    #    freq = i[1]
-   # plt.bar(years, freq,alpha=1)
-  #  plt.xticks(, rotation = 90)
-  #  plt.ylabel('Frequency of Year')
-  #  plt.xlabel('Year')
-   # plt.title('Amount of Times a Movie in the Top 250 Movies was in a Certain Year')
-  #  plt.tight_layout()
-   # plt.show()
+def barchart_year_and_frequency(dictionary):
+    x, y = zip(*dictionary)
+    plt.bar(x, y,alpha=1)
+    plt.xticks(x, rotation = 45)
+    plt.ylabel('Frequency of Year')
+    plt.xlabel('Year')
+    plt.title('Amount of Times a Movie in the Top 250 Movies was in a Certain Year')
+    plt.tight_layout()
+    plt.show()
     
 
 
@@ -88,7 +87,7 @@ def main():
     setUpMoviesTable(json_data, cur, conn)
     getAvgRating(json_data, cur, conn)
     dct = getDictOfYears(json_data, cur, conn)
-    #barchart_year_and_frequency(dct)
+    barchart_year_and_frequency(dct)
     conn.close()
 
 
