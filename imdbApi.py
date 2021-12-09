@@ -14,10 +14,38 @@ def Top250(key):
     url = 'https://imdb-api.com/en/API/Top250Movies/'
     response = requests.get(url, params=parameters).json()
     dct = response['items']
-    #print(dct)
+    #print(dct[:100])
     return dct[:100]
     #print(response)
     #return response
+
+def getDirectors(key):
+    top_dir = Top250(key)
+    director_list = []
+    for dir in top_dir:
+        directors = dir['crew']
+        #print(directors.split('(dir.)')[0])
+        director_list.append(directors.split('(dir.)')[0])
+    #print(director_list)
+    return director_list
+
+def countDirectors(directors):
+    lst_of_directors = []
+    director_frequency = {}
+    for i in directors:
+        lst_of_directors.append(i)
+    for i in lst_of_directors:
+        if i not in director_frequency:
+            director_frequency[i] = 1
+        else:
+            director_frequency[i] += 1
+    #print(director_frequency)
+    return director_frequency
+
+
+
+ 
+
 
 def setUpDatabase(db_name):
     path = os.path.dirname(os.path.abspath(__file__))
@@ -28,20 +56,34 @@ def setUpDatabase(db_name):
 
 def setUpMoviesTable(data, cur, conn):
     cur.execute('DROP TABLE IF EXISTS Movies')
-    cur.execute('CREATE TABLE IF NOT EXISTS "Movies"("title" TEXT PRIMARY KEY, "rank" TEXT, "year" TEXT, "imDbRating" TEXT)')
+    cur.execute('CREATE TABLE IF NOT EXISTS "Movies"("title" TEXT PRIMARY KEY, "rank" TEXT, "year" TEXT, "imDbRating" TEXT, "Director" TEXT)')
     #for movie in data['items']:
+    #dir = []
     for movie in data:
         title = movie['title']
         rank = movie['rank']
         year = movie['year']
         imDbRating = movie['imDbRating']
+        dirr = movie['crew']
+        Director = dirr.split('(dir.)')[0]
         cur.execute('SELECT rank from Movies WHERE title = ?', (title,))
-        cur.execute('INSERT OR IGNORE INTO Movies (title, rank, year, imDbRating) VALUES (?,?,?,?)', (title, rank, year, imDbRating))  
+        cur.execute('INSERT OR IGNORE INTO Movies (title, rank, year, imDbRating, Director) VALUES (?,?,?,?,?)', (title, rank, year, imDbRating, Director))  
         cur.execute("SELECT * FROM Movies LIMIT 25")
        # for row in cur:
            # print(row[:25])
+
+   #cur.execute('DROP TABLE IF EXISTS Cast and Crew')
+    #cur.execute('CREATE TABLE IF NOT EXISTS "Cast and Crew"("crew" TEXT PRIMARY KEY')
            
     conn.commit()
+
+def setUpDirectorsTable(director_dict, cur, conn):
+    cur.execute('DROP TABLE IF EXISTS Directors')
+    cur.execute('CREATE TABLE IF NOT EXISTS "Directors"("Director" TEXT PRIMARY KEY, "Appearance" TEXT)')
+    for key, value in director_dict.items():
+        cur.execute('INSERT INTO Directors (Director, Appearance) VALUES (?,?)', (key,value))
+    conn.commit()
+
 
 #find the average imDb Rating
 def getAvgRating(data, cur, conn):
@@ -87,13 +129,19 @@ def barchart_year_and_frequency(dictionary):
     
 
 
+
+
 def main():
-    json_data = Top250('k_401budis')
+    json_data = Top250('k_26f33bxj')
+    directors = getDirectors('k_26f33bxj')
+    director_dict = countDirectors(directors)
     cur, conn = setUpDatabase('movies.db')
     setUpMoviesTable(json_data, cur, conn)
+    setUpDirectorsTable(director_dict, cur, conn)
     getAvgRating(json_data, cur, conn)
     dct = getDictOfYears(json_data, cur, conn)
     barchart_year_and_frequency(dct)
+  
     conn.close()
 
 
