@@ -13,10 +13,11 @@ def Top250(key):
     parameters = {'apiKey': key}
     url = 'https://imdb-api.com/en/API/Top250Movies/'
     response = requests.get(url, params=parameters).json()
-    #dct = response['items']
+    dct = response['items']
     #print(dct)
-    #return dct
-    return response
+    return dct[:100]
+    #print(response)
+    #return response
 
 def setUpDatabase(db_name):
     path = os.path.dirname(os.path.abspath(__file__))
@@ -28,13 +29,18 @@ def setUpDatabase(db_name):
 def setUpMoviesTable(data, cur, conn):
     cur.execute('DROP TABLE IF EXISTS Movies')
     cur.execute('CREATE TABLE IF NOT EXISTS "Movies"("title" TEXT PRIMARY KEY, "rank" TEXT, "year" TEXT, "imDbRating" TEXT)')
-    for movie in data['items']:
+    #for movie in data['items']:
+    for movie in data:
         title = movie['title']
         rank = movie['rank']
         year = movie['year']
         imDbRating = movie['imDbRating']
         cur.execute('SELECT rank from Movies WHERE title = ?', (title,))
-        cur.execute('INSERT OR IGNORE INTO Movies (title, rank, year, imDbRating) VALUES (?,?,?,?)', (title, rank, year, imDbRating))
+        cur.execute('INSERT OR IGNORE INTO Movies (title, rank, year, imDbRating) VALUES (?,?,?,?)', (title, rank, year, imDbRating))  
+        cur.execute("SELECT * FROM Movies LIMIT 25")
+       # for row in cur:
+           # print(row[:25])
+           
     conn.commit()
 
 #find the average imDb Rating
@@ -64,7 +70,7 @@ def getDictOfYears(data, cur, conn):
 
     year_frequency_sorted = sorted(year_frequency.items(), key=lambda x: x[1], reverse=True)
 
-    print(year_frequency_sorted[:14])
+    #print(year_frequency_sorted[:14])
     
     return year_frequency_sorted[:14]
     #print(lst_of_years)
