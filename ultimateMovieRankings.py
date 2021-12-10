@@ -57,7 +57,7 @@ def getAvgMoney(dct, cur, conn):
         avg = sums / len(lst_of_total_money)
     return avg
 
-def csvMoney(dct, filename, cur, conn):
+def dctMoney(dct, cur, conn):
     money_lst = []
     lst_100s = []
     lst_200s = []
@@ -69,7 +69,7 @@ def csvMoney(dct, filename, cur, conn):
     lst_800s = []
     lst_900s = []
     lst_1000s = []
-    
+
     for key, value in dct.items():
         money_lst.append(value[1:])
     for i in money_lst:
@@ -106,16 +106,27 @@ def csvMoney(dct, filename, cur, conn):
     dct['900-1000'] = len(lst_900s)
     dct['1000+'] = len(lst_1000s)
 
+    return dct
+
+def csvMoney(Moneydct, filename, cur, conn):
     with open(filename, 'w') as file:
         heading = ['Money Range in Millions', 'Frequency']
         writer = csv.writer(file, delimiter = ',')
         writer.writerow(heading)
-        for key,val in dct.items():
+        for key,val in Moneydct.items():
             writer.writerow((key,val))
     file.close()
     return None
 
-
+def barchart_money_and_frequency(dct):
+    lst = [0,1,2,3,4,5,6,7,8,9.10]
+    plt.bar(dct.keys(), dct.values(),alpha=1, color=['blue','green','yellow','red'])
+    plt.xticks(lst, rotation = 45)
+    plt.ylabel('Frequency of Movies')
+    plt.xlabel('Range of Money in Millions')
+    plt.title('Number of Movies in Groups Based on Box Office Domestic Revenue')
+    plt.tight_layout()
+    plt.show()
 
     
 
@@ -124,7 +135,10 @@ def main():
     cur, conn = setUpDatabase('movies.db')
     setUpMoneyTable(dct, cur, conn)
     avg = getAvgMoney(dct, cur, conn)
-    csvMoney(dct, 'money_groups.csv', cur, conn)
+    dctCsv = dctMoney(dct, cur, conn)
+    csvMoney(dctCsv, 'money_groups.csv', cur, conn)
+    barchart_money_and_frequency(dctCsv)
+    
 
 
 

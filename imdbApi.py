@@ -47,10 +47,12 @@ def director_pie(director_frequency):
     directors = []
     frequency = []
     for x, y in director_frequency.items():
-        directors.append(x)
-        frequency.append(y)
-    plt.pie(frequency[:14], labels=directors[:14],radius=5,labeldistance=0.45,startangle=90,rotatelabels =True,counterclock=False)
-    plt.title('Amount of Times a Director has Directed a Movie in the Top 250 Movies')
+        if y>=3:
+            directors.append(x)
+            frequency.append(y)
+    color = ['magenta','red','blue','yellow']
+    plt.pie(frequency,colors=color,labels=directors,autopct='%1.1f%%',radius=5,labeldistance=0.85,startangle=90,counterclock=False)
+    plt.title('Amount of Times a Director has Directed 3 or More Movies in the Top 100 Movies')
     plt.axis('equal')
     plt.show()
  
@@ -128,20 +130,36 @@ def getDictOfYears(data, cur, conn):
 
 def barchart_year_and_frequency(dictionary):
     x, y = zip(*dictionary)
-    plt.bar(x, y,alpha=1)
+    plt.bar(x, y,alpha=1, color=['magenta','cyan','yellow','red'])
     plt.xticks(x, rotation = 45)
     plt.ylabel('Frequency of Year')
     plt.xlabel('Year')
-    plt.title('Amount of Times a Movie in the Top 250 Movies was in a Certain Year')
+    plt.title('Amount of Times a Movie in the Top 100 Movies was in a Certain Year')
     plt.tight_layout()
     plt.show()
+
+def title_and_dir(cur, conn):
+    cur.execute("""SELECT Movies.title, Directors.Director
+    FROM Movies JOIN Directors
+    ON Movies.Director = Directors.Director""")
+    data = cur.fetchall()
+    sorted_data = sorted(data, key=lambda x: x[0])
+    #print(sorted_data)
+    return sorted_data
+
+def director_freq_csv(dct, cur, conn, filename):
+    with open(filename, 'w') as file:
+        heading = ['Director', 'Appearances']
+        writer = csv.writer(file, delimiter=',')
+        writer.writerow(heading)
+        for key,val in dct.items():
+            writer.writerow((key,val))
+    file.close()
+    return None
     
-
-
-
 def main():
-    json_data = Top250('k_26f33bxj')
-    directors = getDirectors('k_26f33bxj')
+    json_data = Top250('k_401budis')
+    directors = getDirectors('k_401budis')
     director_dict = countDirectors(directors)
     cur, conn = setUpDatabase('movies.db')
     setUpMoviesTable(json_data, cur, conn)
@@ -150,8 +168,9 @@ def main():
     dct = getDictOfYears(json_data, cur, conn)
     barchart_year_and_frequency(dct)
     director_pie(director_dict)
+    title_and_dir(cur, conn)
+    director_freq_csv(director_dict, cur, conn, 'Director_Frequency.csv')
     conn.close()
-
 
 if __name__ == "__main__":
     main()
