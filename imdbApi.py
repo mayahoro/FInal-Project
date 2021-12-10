@@ -43,7 +43,16 @@ def countDirectors(directors):
     return director_frequency
 
 
-
+def director_pie(director_frequency):
+    directors = []
+    frequency = []
+    for x, y in director_frequency.items():
+        directors.append(x)
+        frequency.append(y)
+    plt.pie(frequency[:14], labels=directors[:14],radius=5,labeldistance=0.45,startangle=90,rotatelabels =True,counterclock=False)
+    plt.title('Amount of Times a Director has Directed a Movie in the Top 250 Movies')
+    plt.axis('equal')
+    plt.show()
  
 
 
@@ -130,7 +139,6 @@ def barchart_year_and_frequency(dictionary):
 
 
 
-
 def main():
     json_data = Top250('k_26f33bxj')
     directors = getDirectors('k_26f33bxj')
@@ -141,7 +149,7 @@ def main():
     getAvgRating(json_data, cur, conn)
     dct = getDictOfYears(json_data, cur, conn)
     barchart_year_and_frequency(dct)
-  
+    director_pie(director_dict)
     conn.close()
 
 
