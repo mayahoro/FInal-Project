@@ -66,26 +66,31 @@ def setUpDatabase(db_name):
 
 
 def setUpMoviesTable(data, cur, conn):
-    cur.execute('DROP TABLE IF EXISTS Movies')
-    cur.execute('CREATE TABLE IF NOT EXISTS "Movies"("title" TEXT PRIMARY KEY, "rank" TEXT, "year" TEXT, "imDbRating" TEXT, "Director" TEXT)')
-    #for movie in data['items']:
-    #dir = []
+    title_lst = []
+    rank_lst = []
+    year_lst = []
+    imdb_lst = []
+    Director_lst = []
     for movie in data:
         title = movie['title']
+        title_lst.append(title)
         rank = movie['rank']
+        rank_lst.append(rank)
         year = movie['year']
+        year_lst.append(year)
         imDbRating = movie['imDbRating']
+        imdb_lst.append(imDbRating)
         dirr = movie['crew']
         Director = dirr.split('(dir.)')[0]
-        cur.execute('SELECT rank from Movies WHERE title = ?', (title,))
-        cur.execute('INSERT OR IGNORE INTO Movies (title, rank, year, imDbRating, Director) VALUES (?,?,?,?,?)', (title, rank, year, imDbRating, Director))  
-        cur.execute("SELECT * FROM Movies LIMIT 25")
-       # for row in cur:
-           # print(row[:25])
-
-   #cur.execute('DROP TABLE IF EXISTS Cast and Crew')
-    #cur.execute('CREATE TABLE IF NOT EXISTS "Cast and Crew"("crew" TEXT PRIMARY KEY')
-           
+        Director_lst.append(Director)
+    cur.execute('''CREATE TABLE IF NOT EXISTS Movies(title TEXT, rank TEXT, year TEXT, imDbRating TEXT, Director TEXT)''')
+    count = 0
+    for i in range(len(title_lst)):
+        if count > 24:
+            break
+        if cur.execute('SELECT rank FROM Movies WHERE title = ? AND rank = ? AND year = ? AND imDbRating = ? AND Director = ?', (title_lst[i], rank_lst[i], year_lst[i], imdb_lst[i], Director_lst[i])).fetchone() == None:
+            cur.execute('INSERT INTO Movies (title, rank, year, imDbRating, Director) VALUES (?,?,?,?,?)', (title_lst[i], rank_lst[i], year_lst[i], imdb_lst[i], Director_lst[i]))  
+            count += 1
     conn.commit()
 
 def setUpDirectorsTable(director_dict, cur, conn):
