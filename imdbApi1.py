@@ -50,8 +50,8 @@ def setUpMoviesTable(data, cur, conn):
     conn.commit()
 
 def main():
-    json_data = Top250('k_401budis')
-    cur, conn = setUpDatabase('movies.db')
+    json_data = Top250('k_jd2dmt0z')
+    cur, conn = setUpDatabase('movies_finalproj.db')
     setUpMoviesTable(json_data, cur, conn)
     conn.close()
 

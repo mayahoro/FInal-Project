@@ -132,7 +132,7 @@ def barchart_money_and_frequency(dct):
 
 def main():
     dct = getMovies()
-    cur, conn = setUpDatabase('movies.db')
+    cur, conn = setUpDatabase('movies_finalproj.db')
     setUpMoneyTable(dct, cur, conn)
     avg = getAvgMoney(dct, cur, conn)
     dctCsv = dctMoney(dct, cur, conn)

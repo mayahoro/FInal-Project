@@ -164,9 +164,9 @@ def director_freq_csv(dct, cur, conn, filename):
     
 def main():
     json_data = Top250('k_401budis')
-    directors = getDirectors('k_401budis')
+    directors = getDirectors('k_jd2dmt0z')
     director_dict = countDirectors(directors)
-    cur, conn = setUpDatabase('movies.db')
+    cur, conn = setUpDatabase('movies_finalproj.db')
     setUpMoviesTable(json_data, cur, conn)
     setUpDirectorsTable(director_dict, cur, conn)
     getAvgRating(json_data, cur, conn)
