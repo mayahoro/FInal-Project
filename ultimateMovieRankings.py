@@ -29,7 +29,6 @@ def getMovies():
  
    money_per_movie = zip(titles,money)
    money_per_movie_dict = dict(money_per_movie)
-   #print(money_per_movie_dict)
    return money_per_movie_dict
  
 def setUpDatabase(db_name):
@@ -128,8 +127,6 @@ def barchart_money_and_frequency(dct):
    plt.tight_layout()
    plt.show()
 
-
- 
 def main():
    dct = getMovies()
    cur, conn = setUpDatabase('movies.db')
@@ -138,10 +135,6 @@ def main():
    dctCsv = dctMoney(dct, cur, conn)
    csvMoney(dctCsv, 'money_groups.txt', cur, conn)
    barchart_money_and_frequency(dctCsv)
-
-  
- 
- 
  
 if __name__ == "__main__":
    main()

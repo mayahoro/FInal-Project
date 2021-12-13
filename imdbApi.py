@@ -8,25 +8,19 @@ import sqlite3
 import matplotlib
 import matplotlib.pyplot as plt
  
-def Top250(key):
-   #parameters = {'apiKey': key, 'limit': 25}
+def Top100(key):
    parameters = {'apiKey': key}
    url = 'https://imdb-api.com/en/API/Top250Movies/'
    response = requests.get(url, params=parameters).json()
    dct = response['items']
-   #print(dct[:100])
    return dct[:100]
-   #print(response)
-   #return response
- 
+
 def getDirectors(key):
-   top_dir = Top250(key)
+   top_dir = Top100(key)
    director_list = []
    for dir in top_dir:
        directors = dir['crew']
-       #print(directors.split('(dir.)')[0])
        director_list.append(directors.split('(dir.)')[0])
-   #print(director_list)
    return director_list
  
 def countDirectors(directors):
@@ -39,9 +33,7 @@ def countDirectors(directors):
            director_frequency[i] = 1
        else:
            director_frequency[i] += 1
-   #print(director_frequency)
    return director_frequency
- 
  
 def director_pie(director_frequency):
    directors = []
@@ -56,13 +48,11 @@ def director_pie(director_frequency):
    plt.axis('equal')
    plt.show()
  
- 
 def setUpDatabase(db_name):
    path = os.path.dirname(os.path.abspath(__file__))
    conn = sqlite3.connect(path+'/'+db_name)
    cur = conn.cursor()
    return cur, conn
- 
  
 def setUpMoviesTable(data, cur, conn):
     title_lst = []
@@ -99,7 +89,6 @@ def setUpDirectorsTable(director_dict, cur, conn):
        cur.execute('INSERT INTO Directors (Director, Appearance) VALUES (?,?)', (key,value))
    conn.commit()
  
- 
 #find the average imDb Rating
 def getAvgRating(data, cur, conn):
    sums = 0
@@ -126,12 +115,8 @@ def getDictOfYears(data, cur, conn):
            year_frequency[i] += 1
  
    year_frequency_sorted = sorted(year_frequency.items(), key=lambda x: x[1], reverse=True)
- 
-   #print(year_frequency_sorted[:14])
-  
    return year_frequency_sorted[:14]
-   #print(lst_of_years)
- 
+
 def barchart_year_and_frequency(dictionary):
    x, y = zip(*dictionary)
    plt.bar(x, y,alpha=1, color=['magenta','cyan','yellow','red'])
@@ -148,7 +133,6 @@ def title_and_dir(cur, conn):
    ON Movies.Director = Directors.Director""")
    data = cur.fetchall()
    sorted_data = sorted(data, key=lambda x: x[0])
-   #print(sorted_data)
    return sorted_data
  
 def director_freq_csv(dct, cur, conn, filename):
@@ -162,7 +146,7 @@ def director_freq_csv(dct, cur, conn, filename):
    return None
   
 def main():
-   json_data = Top250('k_401budis')
+   json_data = Top100('k_401budis')
    directors = getDirectors('k_jd2dmt0z')
    director_dict = countDirectors(directors)
    cur, conn = setUpDatabase('movies.db')
