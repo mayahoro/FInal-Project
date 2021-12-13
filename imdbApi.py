@@ -111,7 +111,7 @@ def getAvgRating(data, cur, conn):
    avg = sums / len(lst_of_ratings)
    return avg
  
-#get a dictionary of years and how many times it was in the top 250 movies
+#get a dictionary of years and how many times it was in the top 100 movies
 def getDictOfYears(data, cur, conn):
    years = cur.execute('SELECT year from Movies')
    lst = list(years)

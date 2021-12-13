@@ -8,7 +8,6 @@ import sqlite3
 import matplotlib
 import matplotlib.pyplot as plt
 import math
-#import statistics
  
 def getMovies():
  
@@ -47,15 +46,16 @@ def setUpMoneyTable(money_per_movie_dict, cur, conn):
    conn.commit()
  
 def getAvgMoney(dct, cur, conn):
-   sums = 0
-   total_money = cur.execute('SELECT Money_in_Millions from Box_Office')
-   lst_of_total_money = list(total_money)
-   for i in lst_of_total_money:
-       dollar = i[0]
-       number = float(dollar[1:])
-       sums += number
-       avg = sums / len(lst_of_total_money)
-   return avg
+    sums = 0
+    total_money = cur.execute('SELECT Money_in_Millions from Box_Office')
+    lst_of_total_money = list(total_money)
+    for i in lst_of_total_money:
+        dollar = i[0]
+        number = float(dollar[1:])
+        sums += number
+        avg = sums / len(lst_of_total_money)
+    print(avg)
+    return avg
  
 def dctMoney(dct, cur, conn):
    money_lst = []
@@ -127,8 +127,8 @@ def barchart_money_and_frequency(dct):
    plt.title('Number of Movies in Groups Based on Box Office Domestic Revenue')
    plt.tight_layout()
    plt.show()
- 
-  
+
+
  
 def main():
    dct = getMovies()
@@ -136,8 +136,9 @@ def main():
    setUpMoneyTable(dct, cur, conn)
    avg = getAvgMoney(dct, cur, conn)
    dctCsv = dctMoney(dct, cur, conn)
-   csvMoney(dctCsv, 'money_groups.csv', cur, conn)
+   csvMoney(dctCsv, 'money_groups.txt', cur, conn)
    barchart_money_and_frequency(dctCsv)
+
   
  
  
