@@ -173,7 +173,7 @@ def main():
    barchart_year_and_frequency(dct)
    director_pie(director_dict)
    title_and_dir(cur, conn)
-   director_freq_csv(director_dict, cur, conn, 'Director_Frequency.csv')
+   director_freq_csv(director_dict, cur, conn, 'Director_Frequency.txt')
    conn.close()
  
 if __name__ == "__main__":
